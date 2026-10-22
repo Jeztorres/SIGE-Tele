@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { School, Mail, Lock, User, Loader2, ShieldCheck, ArrowLeft, Eye, EyeOff } from 'lucide-react';
-import { supabase } from '../supabase';
+import { supabase, urlDeRetorno } from '../supabase';
 import SelectorTema from './SelectorTema';
 
 // Traduce los errores más comunes de Supabase Auth
@@ -49,7 +49,7 @@ export default function Login() {
         const { data, error: err } = await supabase.auth.signUp({
           email: correo.trim(),
           password: clave,
-          options: { data: { nombre: nombre.trim() }, emailRedirectTo: window.location.origin }
+          options: { data: { nombre: nombre.trim() }, emailRedirectTo: urlDeRetorno() }
         });
         if (err) throw err;
         // Con confirmación de correo activada no hay sesión todavía
@@ -60,7 +60,7 @@ export default function Login() {
         }
       } else {
         const { error: err } = await supabase.auth.resetPasswordForEmail(correo.trim(), {
-          redirectTo: window.location.origin
+          redirectTo: urlDeRetorno()
         });
         if (err) throw err;
         setAviso('Si el correo está registrado, recibirás un enlace para crear una nueva contraseña.');
@@ -76,7 +76,7 @@ export default function Login() {
     setError('');
     const { error: err } = await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo: window.location.origin }
+      options: { redirectTo: urlDeRetorno() }
     });
     if (err) setError(traducirError(err.message));
   };

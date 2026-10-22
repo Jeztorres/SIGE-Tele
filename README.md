@@ -35,6 +35,19 @@ Sistema de Gestión Escolar para **Telesecundaria**: pase de lista, tareas, cali
    ```
 3. Abre `http://localhost:3000`, crea tu cuenta y listo.
 
+## Publicar en GitHub Pages
+
+El flujo `.github/workflows/pages.yml` compila y publica la app en `https://TU-USUARIO.github.io/SIGE-Tele/` cada vez que se sube un cambio a `main`. Configuración única:
+
+1. En GitHub: **Settings → Pages → Build and deployment → Source: GitHub Actions**.
+2. **Settings → Secrets and variables → Actions → New repository secret**, y crea:
+   - `VITE_SUPABASE_URL`: la Project URL de Supabase (sin `/rest/v1/`).
+   - `VITE_SUPABASE_ANON_KEY`: **solo** la clave pública (anon / publishable). El flujo se detiene si detecta una clave secreta.
+3. En Supabase: **Authentication → URL Configuration**: pon la dirección de Pages como *Site URL* y agrega `https://TU-USUARIO.github.io/SIGE-Tele/**` (y `http://localhost:3000/**` para desarrollo) en *Redirect URLs*.
+4. Haz un `git push` o lanza el flujo manualmente desde la pestaña **Actions**.
+
+> Las claves públicas quedan dentro del código publicado; es normal. Lo que protege los datos son las reglas RLS de `supabase/esquema.sql`.
+
 ## Seguridad y privacidad
 
 - **Nunca subas `client/.env.local`** ni uses la clave `service_role` / `sb_secret_...` en el cliente. El archivo `.gitignore` ya excluye los `.env`.
