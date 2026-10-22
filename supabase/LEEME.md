@@ -25,7 +25,9 @@
 - Si **no** quieres que cualquiera cree cuentas: en *Sign In / Providers* desactiva **Allow new users to sign up**
   y crea los usuarios a mano en **Authentication → Users → Add user**.
 
-### Entrar con Google (opcional)
+### Entrar con Google (opcional, desactivado por ahora)
+El botón no aparece hasta que pongas `VITE_LOGIN_GOOGLE=true` (en `client/.env.local` y como variable de GitHub). No tiene relación con guardar fotos en Drive.
+
 1. Google Cloud Console → proyecto nuevo `SIGE-Tele` → **APIs y servicios → Pantalla de consentimiento OAuth** → Externo.
 2. **Credenciales → Crear credenciales → ID de cliente OAuth → Aplicación web**.
    En *URI de redireccionamiento autorizados* pon: `https://TU-PROYECTO.supabase.co/auth/v1/callback`.

@@ -26,8 +26,9 @@ export default function Login() {
   const [error, setError] = useState('');
   const [aviso, setAviso] = useState('');
 
-  // Google bloquea el inicio de sesión dentro de la app de escritorio (Electron)
-  const permiteGoogle = !window.electron;
+  // El botón de Google solo se muestra si se activa VITE_LOGIN_GOOGLE=true (y se configuró Google en Supabase).
+  // Además, Google bloquea el inicio de sesión dentro de la app de escritorio (Electron).
+  const permiteGoogle = import.meta.env.VITE_LOGIN_GOOGLE === 'true' && !window.electron;
 
   const cambiarModo = (m) => {
     setModo(m);
