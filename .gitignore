@@ -1,0 +1,30 @@
+# ── Claves y configuración local (NUNCA subir) ──
+.env
+.env.*
+!.env.example
+*.local
+*.pem
+*.key
+
+# ── Datos personales de alumnos y archivos subidos ──
+server/data/
+server/uploads/
+respaldo_*.json
+Calificaciones_*.xlsx
+Calificaciones_*.xls
+
+# ── Dependencias y compilados ──
+node_modules/
+dist/
+build/
+out/
+
+# ── Registros y archivos del sistema / editor ──
+*.log
+npm-debug.log*
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.claude/

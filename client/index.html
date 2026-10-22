@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%230052FF'><path d='M12 2L1 7l11 5 9-4.09V17h2V7L12 2z'/></svg>" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+    <meta name="theme-color" content="#0052FF" />
+    <!-- Tema claro/oscuro: se aplica antes de pintar para que no haya destello blanco -->
+    <script>
+      (function () {
+        try {
+          var m = localStorage.getItem('sige_tema_modo') || 'auto';
+          var d = m === 'oscuro' || (m === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+          if (d) { document.documentElement.classList.add('dark'); document.documentElement.style.colorScheme = 'dark'; }
+        } catch (e) {}
+      })();
+    </script>
+    <title>Sistema de Gestión Escolar para Telesecundaria (SIGE-Tele)</title>
+    <!-- Google Fonts: DM Sans & JetBrains Mono (Crypto Blue Design System) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Motor de IA DeepSeek Libre sin API Key -->
+    <script src="https://js.puter.com/v2/"></script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

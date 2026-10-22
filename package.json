@@ -1,0 +1,23 @@
+{
+  "name": "software-telesecundaria",
+  "version": "1.0.0",
+  "description": "Sistema de Control Escolar, Semáforo de Riesgo, CTE y Carpeta de Evidencias para Telesecundaria",
+  "scripts": {
+    "server": "node server/server.js",
+    "client": "npm --prefix client run dev",
+    "desktop": "electron electron-main.js",
+    "build": "npm --prefix client run build",
+    "start": "cmd /c \"start cmd /k node server/server.js\" && cmd /c \"npm --prefix client run dev\""
+  },
+  "keywords": [
+    "telesecundaria",
+    "control-escolar",
+    "cte",
+    "semaforo-riesgo"
+  ],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^45.0.0"
+  }
+}
