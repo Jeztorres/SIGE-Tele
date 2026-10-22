@@ -35,6 +35,10 @@ Sistema de Gestión Escolar para **Telesecundaria**: pase de lista, tareas, cali
    ```
 3. Abre `http://localhost:3000`, crea tu cuenta y listo.
 
+## Fotos de evidencias en Google Drive (opcional)
+
+Por defecto las fotos van a un bucket privado de Supabase. Para guardarlas en tu propio Google Drive (sin que los maestros tengan acceso a él) sigue [`supabase/DRIVE.md`](supabase/DRIVE.md).
+
 ## Publicar en GitHub Pages
 
 El flujo `.github/workflows/pages.yml` compila y publica la app en `https://TU-USUARIO.github.io/SIGE-Tele/` cada vez que se sube un cambio a `main`. Configuración única:

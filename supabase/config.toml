@@ -1,0 +1,6 @@
+# Configuración mínima para publicar la función con la CLI de Supabase.
+project_id = "sige-tele"
+
+[functions.drive]
+# La función valida por sí misma la sesión del maestro (compatible con las claves nuevas de Supabase)
+verify_jwt = false

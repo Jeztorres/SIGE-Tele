@@ -144,6 +144,25 @@ create index if not exists tareas_per_idx         on public.tareas (user_id, per
 create index if not exists evidencias_alumno_idx  on public.evidencias (user_id, alumno_id);
 create index if not exists notas_docente_orden    on public.notas_docente (user_id, creado desc);
 
+-- ---------- Google Drive (solo la función "drive" las usa) ----------
+-- Guardan el id de la carpeta de Drive de cada maestro. Tienen RLS activado SIN políticas:
+-- ningún maestro puede leerlas ni escribirlas; solo la función (service role).
+
+create table if not exists public.drive_carpetas (
+  user_id   uuid primary key references auth.users(id) on delete cascade,
+  folder_id text not null
+);
+
+create table if not exists public.drive_ajustes (
+  clave text primary key,
+  valor text not null
+);
+
+alter table public.drive_carpetas enable row level security;
+alter table public.drive_ajustes  enable row level security;
+revoke all on public.drive_carpetas from anon, authenticated;
+revoke all on public.drive_ajustes  from anon, authenticated;
+
 -- ---------- Seguridad: cada maestro solo ve lo suyo (RLS) ----------
 
 do $$

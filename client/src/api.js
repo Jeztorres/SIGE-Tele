@@ -1,6 +1,7 @@
 import { supabase } from './supabase';
 import { calcularSemaforoyAlertas } from './analisis';
 import { comprimirImagen, MAX_BYTES } from './comprimirImagen';
+import { driveActivo, subirADrive, firmarEnDrive, borrarEnDrive } from './driveApi';
 
 const MESES_ES = [
   'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio',
@@ -599,11 +600,17 @@ export async function deleteAcuerdoCTE(id) {
 }
 
 // ───────── Evidencias (fotos) ─────────
-// Hoy los archivos van a un bucket privado de Supabase Storage y se muestran con
-// enlaces firmados que vencen en 1 hora. Cuando conectemos Google Drive solo cambian
-// `subirArchivo`, `urlsDeArchivos` y `borrarArchivo`; el resto de la app no se entera.
+// Los archivos pueden estar en dos lugares, y la columna `ruta` dice cuál:
+//   "drive:<id>"  → Google Drive del administrador, a través de la función "drive"
+//   otra cosa     → bucket privado de Supabase Storage (fotos anteriores / modo sin Drive)
+// Las fotos nuevas van a Drive cuando VITE_USAR_DRIVE=true. En ambos casos el resto de la app
+// recibe una URL temporal (1 hora) en `evidencia.url` y no se entera de dónde está el archivo.
+
+const PREFIJO_DRIVE = 'drive:';
+const esDrive = (ruta) => typeof ruta === 'string' && ruta.startsWith(PREFIJO_DRIVE);
 
 async function subirArchivo(file, rutaBase) {
+  if (driveActivo) return PREFIJO_DRIVE + (await subirADrive(file));
   const ext = (file.name.match(/\.[a-zA-Z0-9]+$/)?.[0] || '').toLowerCase();
   const limpio = file.name.replace(/\.[^/.]+$/, '').replace(/[^a-zA-Z0-9_-]/g, '_').slice(0, 60) || 'archivo';
   const ruta = `${rutaBase}/${Date.now()}_${limpio}${ext}`;
@@ -613,19 +620,45 @@ async function subirArchivo(file, rutaBase) {
 }
 
 async function urlsDeArchivos(rutas) {
-  const validas = [...new Set(rutas.filter(Boolean))];
-  if (!validas.length) return {};
-  const { data, error } = await db().storage.from(BUCKET).createSignedUrls(validas, 3600);
-  if (error) throw new Error(error.message);
+  const todas = [...new Set(rutas.filter(Boolean))];
   const mapa = {};
-  (data || []).forEach(d => { if (d.signedUrl) mapa[d.path] = d.signedUrl; });
+
+  const enDrive = todas.filter(esDrive);
+  const enStorage = todas.filter((r) => !esDrive(r));
+
+  if (enStorage.length) {
+    const { data, error } = await db().storage.from(BUCKET).createSignedUrls(enStorage, 3600);
+    if (error) throw new Error(error.message);
+    (data || []).forEach(d => { if (d.signedUrl) mapa[d.path] = d.signedUrl; });
+  }
+
+  if (enDrive.length) {
+    try {
+      const urls = await firmarEnDrive(enDrive.map((r) => r.slice(PREFIJO_DRIVE.length)));
+      enDrive.forEach((r) => {
+        const u = urls[r.slice(PREFIJO_DRIVE.length)];
+        if (u) mapa[r] = u;
+      });
+    } catch (err) {
+      // Si Drive falla, la lista de evidencias se sigue mostrando (sin las miniaturas)
+      console.warn('No se pudieron obtener las fotos de Drive:', err.message);
+    }
+  }
   return mapa;
 }
 
 async function borrarArchivo(ruta) {
   if (!ruta) return;
-  const { error } = await db().storage.from(BUCKET).remove([ruta]);
-  if (error) console.warn('No se pudo borrar el archivo:', error.message);
+  try {
+    if (esDrive(ruta)) {
+      await borrarEnDrive(ruta.slice(PREFIJO_DRIVE.length));
+    } else {
+      const { error } = await db().storage.from(BUCKET).remove([ruta]);
+      if (error) throw new Error(error.message);
+    }
+  } catch (err) {
+    console.warn('No se pudo borrar el archivo:', err.message);
+  }
 }
 
 async function enriquecerEvidencias(filas) {
